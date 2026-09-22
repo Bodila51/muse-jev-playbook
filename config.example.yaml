@@ -1,0 +1,27 @@
+# Copy this file to config.yaml and edit locally. Never commit config.yaml.
+# Kill switch: enabled: false, or include "bypass jev" / "no jev" in the request state.
+enabled: true
+model: jev-latest   # jev-latest | jev-preview (preview for shadow-testing new packs)
+
+# shadow logs advice and the agent acts on normal judgment;
+# active requires the agent/skill to honor route.action.
+mode: shadow  # shadow | active
+
+# Confidence policy (see docs/policy.md)
+policy:
+  act_min: 0.80      # >= act_min: act on the decision autonomously
+  surface_min: 0.50  # >= surface_min: treat as recommendation, proceed carefully
+                     # < surface_min: escalate to the human
+
+thresholds:
+  min_choice_confidence: 0.55  # below: choice winner not trusted -> proceed_full
+  reuse_min: 0.65              # noul P(yes) to reuse a cached artifact
+  subagent_min: 0.75           # noul P(yes) to spawn a specialist subagent
+  stop_retry_min: 0.55         # noul P(yes) to stop a repeated failing approach
+
+limits:
+  max_browser_sources: 5
+  max_retries_same_error: 1
+
+logging:
+  path: logs/runs.jsonl
