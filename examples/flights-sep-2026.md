@@ -1,6 +1,10 @@
-# Case study: picking flight dates with Jev (September 2026)
+# Historical illustrative case: picking flight dates with Jev (September 2026)
 
-A real run with the route anonymized: the agent collected daily Google Flights prices, then used Jev (`jev-1.13.0`) to choose *where to look closer* instead of deep-diving every option. Prices are a snapshot from 2026-09-22, not guaranteed fares.
+This is a historical example transcribed from an earlier run; it is not
+independently verified, a benchmark, or proof of a live integration in this
+repository. The route is anonymized. Prices are a snapshot from 2026-09-22 and
+are not guaranteed fares. Treat every decision as a recommendation only; no
+booking or other external side effect is authorized or demonstrated here.
 
 ## Run 1 — one-way on a transatlantic route, Oct–Dec 2026
 
@@ -13,9 +17,9 @@ Jev questions (one parallel call over the price table):
 - `choice` "Best single day?" → **October 5**, confidence **0.67**
 - `noul` "Should we book an October fare now?" → yes, **0.82**
 
-Policy read: month at 1.0 → act (focus October); day at 0.67 → surface as recommendation; book-now at 0.82 → act (start booking flow for October dates, still verifying live fares before any purchase).
+Policy read (illustrative only): month at 1.0 → act (focus October); day at 0.67 → surface as recommendation; book-now at 0.82 → recommendation to verify October fares, not authorization to start a booking flow.
 
-**What Jev saved:** instead of investigating 92 days × airlines × connections, the agent narrowed to ~8 October days first.
+**What the historical run reported:** instead of investigating 92 days × airlines × connections, the agent narrowed to ~8 October days first. This is not a measured savings claim for this repository.
 
 ## Run 2 — round trip on the same route, Jan–Aug 2027 (3–4 day trips)
 
@@ -34,5 +38,5 @@ Cheapest windows at $1030: Apr 1→4, Apr 17→20, May 29→Jun 1 (3-day); Apr 6
 
 - This is one local run with proxy metrics (fares fetched, options narrowed), not a benchmark.
 - Jev didn't find the fares — the agent's browser did. Jev ranked and gated.
-- The 0.79 book-now signal correctly landed in the "surface, don't auto-act" band — exactly what the policy is for.
+- The 0.79 book-now signal landed in the "surface, don't auto-act" band in the historical account; that is an illustration, not a live-policy result.
 - Fares move; every number above was true on 2026-09-22 and needs re-verification before purchase.

@@ -1,6 +1,6 @@
 ---
 name: "jev_decision_layer"
-description: "Use TypeSafe AI's Jev as a cheap, fast decision layer before expensive agent work (browser, deep research, retries, subagents). Call when a task is about to fork into costly tool use, a cached result might exist, an approach already failed, or an irreversible action is ahead."
+description: "Use TypeSafe AI's Jev as an optional typed decision layer before broader agent work (browser, deep research, retries, subagents). Call when a task is about to fork into substantial tool use, a cached result might exist, an approach already failed, or an irreversible action is ahead."
 ---
 
 # Jev Decision Layer
@@ -16,7 +16,7 @@ Call Jev when ANY of these is true:
 - about to load several specialized skills or spawn a subagent
 - the request smells like an irreversible action (send, publish, pay, delete, permission change)
 
-Skip Jev (kill switch) when: config has `enabled: false`, or the user wrote `bypass jev` / `no jev`. Then work normally and log nothing about Jev.
+Skip Jev (kill switch) when: config has `enabled: false`, or the user wrote `bypass jev` / `no jev`. Then work normally and do not send the task state to a provider. The repository router, if invoked, may still write a bounded fallback record containing only its goal SHA-256 and route metadata.
 
 ## Workflow
 
@@ -52,7 +52,7 @@ Skip Jev (kill switch) when: config has `enabled: false`, or the user wrote `byp
 | `ask_human` | Pause before any irreversible action |
 | `proceed_full` | Normal work with ordinary safety rules |
 
-6. **Log the decision** (JSONL, one line): timestamp, goal (≤300 chars), action, confidence, mode, what you actually did, outcome (`ok` / `overridden` / `wrong`), `jev_used`, latency. Never log secrets or raw user content.
+6. **Log bounded metadata** (JSONL, one line): timestamp, goal SHA-256, provider/model, action, mode, primitive counts, and `jev_used`. Never log the goal, answer values, criteria text, headers, credentials, or other raw user content.
 
 ## Hard rules
 

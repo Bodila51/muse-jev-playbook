@@ -41,13 +41,13 @@ proceed normally          cache hints, error history, constraints}
                     +---------------------------------------+
                                         |
                                         v
-                              log decision: goal, action,
-                              confidence, outcome
+                              log bounded metadata only: goal hash,
+                              action, mode, provider/model, primitive counts
 ```
 
 ## The feedback loop is the product
 
-The router alone is a one-shot optimization. The durable value is the **decision log**: every call records what Jev recommended, at what confidence, and what actually happened. Review it weekly to:
+The router alone is a one-shot optimization. The durable value is the **decision log**: successful calls record bounded routing metadata and whether Jev was used, while fallback calls record the same bounded decision metadata and may include only a safe `error_class`; no goal or answer payload is retained. Review it weekly to:
 
 - recalibrate thresholds (are 0.80+ actions actually succeeding?),
 - sharpen question criteria (which questions come back low-confidence?),
@@ -60,8 +60,8 @@ See [measurement.md](measurement.md).
 - **No pre-wake hook.** Nothing here reduces the cost of the agent waking up. The gate runs after wake, before expensive tools.
 - **No enforcement.** In shadow mode the decision is advisory; in active mode it is honored only because the agent's skill says so. An agent that ignores the skill ignores the gate.
 - **No safety bypass.** Irreversible actions keep their own confirmation path. Jev's `ask_human` is a second tripwire, not a replacement for it.
-- **No credential flow.** Track A reads `TYPESAFE_API_KEY` from the environment only. Track B never touches a key at all.
+- **No credential flow.** Track A reads the explicitly selected route's credential environment variable; the official route uses `TYPESAFE_API_KEY`, and the separately labeled native route uses `HERMES_CUSTOM_API_EXPERIENTIALLABS_AI_API_KEY`. Track B never touches a key at all.
 
 ## Failure behavior
 
-If Jev is disabled, bypassed, slow, or errors: fall back to the normal agent path. Never invent a decision, never block the user on a classifier outage. Log the fallback like any other decision (`jev_used: false`) so outages are visible in review.
+If Jev is disabled, bypassed, slow, or errors: fall back to the normal agent path. Never invent a decision, never block the user on a classifier outage. Log the fallback with a goal hash and `jev_used: false` so outages are visible without retaining task text.

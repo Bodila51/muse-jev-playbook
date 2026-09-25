@@ -2,15 +2,15 @@
 
 ## Auth errors (Track A)
 
-**`TYPESAFE_API_KEY is missing`** — the key must be in the process environment. `export TYPESAFE_API_KEY=...` before running, or use your secret manager. The code never reads key files; that's intentional.
+Load `TYPESAFE_API_KEY` into the child-process environment only through a secret manager or another protected local injection mechanism. The code intentionally reads process environment variables, not key files. Never put the value in a project file, command argument, shell history, log, or chat.
 
-**401 / 403 from api.typesafe.ai** — this is a question about the *request* before it's a question about the key:
-1. Verify the request actually carried the credential (bearer header) via your client/SDK.
-2. Check the key value for truncation or pasted whitespace.
+**401 / 403 from the selected API** — this is a question about the *request* before it's a question about the key:
+1. Verify via your client/SDK that the request used the selected credential path, without displaying or inspecting the value.
+2. Use a non-disclosing presence/status check from the secret manager or client to detect injection or configuration issues; never print, paste, or otherwise expose the value.
 3. Check the account's access/entitlements.
 Only after an attached-credential request is still rejected should you rotate/replace the key.
 
-**Track B (Muse/Hatch): never do any of the above.** The `custom.typesafe-ai` credential is managed by the connector. If a call fails with 401/403, check the request first; only then re-run the connector's access flow. Never ask the user to paste a key in chat.
+**Track B:** do not assume a connector exists or is authenticated. Use only a connector already attached and verified by the host; if unavailable, keep the route disabled. Never ask the user to paste a key in chat.
 
 ## Model choice
 
@@ -27,11 +27,11 @@ Only after an attached-credential request is still rejected should you rotate/re
 
 ## Timeouts / slowness
 
-Jev calls are typically ~1s. On timeout: fall back to the normal agent path, log `jev_used: false`, and keep going. If timeouts persist, check network egress and the SDK version (`pip install -U typesafe-sdk`).
+On timeout or provider failure: fall back to the normal agent path, record `jev_used: false` with bounded metadata, and keep going. Do not claim Jev decided. If timeouts persist, check network egress and the pinned SDK version rather than upgrading it during a live investigation.
 
 ## Kill switch not working
 
-Checklist: `config.yaml` has `enabled: false` (Track A reads `config.yaml`, falling back to `config.example.yaml` — make sure you're editing the right file); the bypass markers are `bypass jev` and `no jev` matched case-insensitively against goal/raw/message/notes. Track B: the skill checks the markers before building the state.
+Checklist: `config.yaml` has `enabled: false`; the loader never falls back to `config.example.yaml`, and that example is disabled too. The bypass markers are `bypass jev` and `no jev` matched case-insensitively against goal/raw/user_message/message/notes. Track B: the skill checks the markers before building the state.
 
 ## Unexpected actions in active mode
 
@@ -39,4 +39,8 @@ The router maps Jev outputs through thresholds in `config.yaml` (`thresholds`, `
 
 ## Jev disagrees with the agent repeatedly
 
-Log the overrides (see `agent_did` vs `action` in the log schema). If the agent is right >50% of overrides, the question pack is miscalibrated for your workload — rewrite the questions, don't just lower thresholds.
+Record overrides in a separate experiment note (for example, `agent_did` versus
+`action`); the project JSONL audit intentionally stores only bounded route
+metadata. If the agent is right >50% of overrides, the question pack is
+miscalibrated for your workload — rewrite the questions, don't just lower
+thresholds.

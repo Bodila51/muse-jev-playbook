@@ -1,6 +1,6 @@
 # Concepts: what Jev is
 
-Jev is TypeSafe AI's "System One" model: fast, typed judgments instead of generated text. Think of it as the reflex layer of an agent — the part that decides *what kind of work this is* and *how much effort it deserves* before the slow, expensive reasoning starts.
+Jev is TypeSafe AI's "System One" model: typed judgments instead of generated text. Think of it as an optional decision layer — the part that can classify *what kind of work this is* and *how much effort it deserves* before broader reasoning starts.
 
 ## The three primitives
 
@@ -55,7 +55,9 @@ Thresholds scale with the cost of being wrong: irreversible actions need human c
 
 ## Cost and latency shape
 
-A Jev call is typically ~1 second and a fraction of a cent — orders of magnitude cheaper than a browser session, a deep research pass, or a wasted subagent. The entire economic argument of this playbook: spend a tiny, bounded classification call to avoid unbounded expensive work.
+Cost and latency vary by provider, model, network, and question size. Measure
+both in your environment before deciding whether the gate is economical; no
+current offline run in this repository establishes a universal price or latency.
 
 ## State design (the 80/20)
 
