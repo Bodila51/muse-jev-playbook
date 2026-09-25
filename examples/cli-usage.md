@@ -5,7 +5,8 @@
 One-off decision from a JSON state:
 
 ```bash
-export TYPESAFE_API_KEY=...
+# Inject TYPESAFE_API_KEY into the process environment through a secret manager.
+# Do not put the value in a file or command argument.
 .venv/bin/python -m src.cli '{"goal":"summarize today AI agent news","kind":"research"}'
 ```
 
@@ -40,23 +41,20 @@ Approval gate before an irreversible action:
 
 ## Track B — Agent track (Muse/Hatch)
 
-The agent calls Jev through its own tooling (credential `custom.typesafe-ai`,
-never a raw key). The equivalent of the triage call above is: build the state
+The agent may use a credential connector only when the host has already attached and verified it. This repository makes no connector-availability claim and the agent never receives a raw key. The equivalent of the triage call above is: build the state
 from `skill/jev-decision-layer.SKILL.md`, ask the recipe's questions in one
 parallel call, apply `docs/policy.md` thresholds, log the decision.
 
-Example decision log line (JSONL):
+Example decision log line (JSONL, with task text omitted):
 
 ```json
-{"ts":"2026-09-22T10:15:00Z","goal":"Summarize today's AI agent news",
- "questions":["intent","reuse_cache","research_cap"],"action":"research_capped",
- "confidence":0.88,"mode":"shadow","agent_did":"capped at 5 sources",
- "outcome":"ok","jev_used":true,"ms":900}
+{"ts":"2026-09-22T10:15:00Z","goal_sha256":"<sha256>",
+ "provider":"experientiallabs_native","model":"jev-latest",
+ "action":"research_capped","mode":"shadow",
+ "primitive_counts":{"choice_count":1,"noul_count":3,"score_count":1},
+ "jev_used":true}
 ```
 
 ## Reading the output
 
-`action` is the verb, `reason` is the one-line why, `details` carries the raw
-Jev values (intent + confidence + probabilities, noul P(yes) values, complexity).
-In shadow mode the agent logs the recommendation and uses normal judgment; in
-active mode it honors `action`. See `docs/policy.md` for the threshold table.
+`action` is the verb, `reason` is the one-line why, and CLI `details` carries the typed Jev values returned to the caller (intent + confidence + probabilities, noul P(yes) values, complexity). Those values are not written to the JSONL audit. In shadow mode the agent logs bounded metadata and uses normal judgment; in active mode it honors `action`. See `docs/policy.md` for the threshold table.

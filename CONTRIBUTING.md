@@ -6,7 +6,9 @@ Thanks for helping improve this playbook.
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+# requirements.txt declares the direct dependencies; install the reproducible,
+# hash-checked lockfile.
+.venv/bin/pip install --require-hashes -r requirements.lock
 cp config.example.yaml config.yaml
 ```
 

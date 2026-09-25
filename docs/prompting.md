@@ -1,6 +1,6 @@
 # Prompting: writing states and questions that get high-confidence answers
 
-Jev's accuracy is dominated by input quality. These rules come from production use; each has a failure mode attached.
+Jev's accuracy is dominated by input quality. These are design heuristics from the playbook; validate them on your own workload and treat them as unverified until measured.
 
 ## State rules
 

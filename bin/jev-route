@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Project-local Jev router launcher.
+# Usage: bin/jev-route '<compact JSON state>'
+set -euo pipefail
+
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ "$#" -ne 1 ]]; then
+  printf '%s\n' 'usage: bin/jev-route <compact-json-state>' >&2
+  exit 2
+fi
+
+cd -- "$ROOT"
+exec "$ROOT/.venv/bin/python" -B -m src.cli "$1"

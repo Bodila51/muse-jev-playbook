@@ -50,7 +50,7 @@ CASES = [
     ({"goal": "big parallel investigation", "kind": "research"},
      {"intent": "research", "conf": 0.9, "sub": 0.85}, "allow_subagent"),
     ({"goal": "vague thing", "kind": "research"},
-     {"intent": "research", "conf": 0.4}, "research_capped"),  # low conf still caps
+     {"intent": "research", "conf": 0.4}, "proceed_full"),  # low confidence is not a cap
     ({"goal": "bypass jev please", "kind": "research"},
      {"intent": "research", "conf": 0.9}, "research_capped"),  # bypass handled in route_task, not here
 ]

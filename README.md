@@ -1,16 +1,16 @@
 # muse-jev-playbook
 
-Use [TypeSafe AI's Jev](https://docs.typesafe.ai) as a cheap, fast decision layer inside an AI agent workflow — triage, classify, score, and gate work **before** expensive steps (browser, deep research, retries, subagents).
+Use [TypeSafe AI's Jev](https://docs.typesafe.ai) as an optional, typed decision layer inside an AI agent workflow — triage, classify, score, and potentially gate work **before** broader steps (browser, deep research, retries, subagents). Measure local cost and latency before treating it as an optimization.
 
-This is a practical, agent-oriented playbook: concepts, a confidence policy, copy-paste question recipes, a drop-in skill, and a real-world case study. It is adapted from [grok-bot-jev](https://github.com/Bodila51/grok-bot-jev) and generalized for any agent runtime (Muse/Hatch, custom harnesses, or plain scripts).
+This is a practical, agent-oriented playbook: concepts, a confidence policy, copy-paste question recipes, a drop-in skill, and a historical illustrative case. It is adapted from [grok-bot-jev](https://github.com/Bodila51/grok-bot-jev) and generalized for any agent runtime (Muse/Hatch, custom harnesses, or plain scripts).
 
-Jev does not generate text. It answers three typed question primitives in one parallel pass — `choice`, `score`, `noul` — each with probabilities and a confidence value (0–1) your code or agent can branch on. One Jev call costs a fraction of a cent and typically returns in about a second.
+Jev does not generate text. It answers three typed question primitives in one parallel pass — `choice`, `score`, `noul` — each with probabilities and a confidence value (0–1) your code or agent can branch on. Cost and latency vary by provider, model, network, and question size; measure them locally before making an economic claim.
 
 ## Two ways to use this repo
 
-**Track A — Developer (any runtime).** Install the TypeSafe SDK, set `TYPESAFE_API_KEY`, run the router in `src/` or the recipes in `recipes/`. See [QUICKSTART.md](QUICKSTART.md).
+**Track A — Developer (any runtime).** Install the pinned TypeSafe SDK, load `TYPESAFE_API_KEY` into the process environment through a secret manager, and run the router in `src/` or the recipes in `recipes/`. See [QUICKSTART.md](QUICKSTART.md).
 
-**Track B — Agent (Muse/Hatch).** The credential is already connected; the agent calls Jev through its tooling and follows [skill/jev-decision-layer.SKILL.md](skill/jev-decision-layer.SKILL.md). No key handling, ever.
+**Track B — Agent.** Use a credential connector only if the host has already attached and verified it. This repository does not install or attach connectors and does not imply that one is available. The agent follows [skill/jev-decision-layer.SKILL.md](skill/jev-decision-layer.SKILL.md) and never handles a raw key.
 
 Both tracks share the same concepts, policy, and recipes.
 
@@ -23,7 +23,7 @@ Both tracks share the same concepts, policy, and recipes.
 - `docs/measurement.md` — shadow → active rollout and how to measure the effect honestly
 - `skill/jev-decision-layer.SKILL.md` — drop-in skill: when to call Jev and how to honor the result
 - `recipes/` — six ready-made question packs: triage, rank options, act-or-wait, retry gate, research cap, approval gate
-- `examples/flights-sep-2026.md` — real case: picking flight dates with Jev (with numbers)
+- `examples/flights-sep-2026.md` — historical illustrative case: picking flight dates with Jev (with numbers)
 - `examples/cli-usage.md` — calling Jev from the shell
 - `examples/ab-template.json` — template for your own before/after measurements
 - `TROUBLESHOOTING.md` — auth errors, model choice, low confidence, timeouts
@@ -50,7 +50,8 @@ reuse_cache | stop_retry | run_deterministic | chat_only |
 research_capped | allow_subagent | ask_human | proceed_full
     |
     v
-log the decision (goal, action, confidence, outcome) for calibration
+log bounded metadata (goal hash, action, mode, provider/model,
+primitive counts) for calibration
 ```
 
 Start in **shadow mode** (log advice, act normally), review the log, then switch to **active mode** (honor the action). The kill switch always wins.
